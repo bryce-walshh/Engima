@@ -14,6 +14,8 @@ import re
 
 from components import Rotor, Plugboard, Reflector, ALPHABET
 
+import machine
+
 class Enigma():
     '''
     This class will bring together components to create an actual Enigma machine.
@@ -25,7 +27,7 @@ class Enigma():
     The generic initial rotor ordering (which can be changed by the user) is L = I, M = II, R = III (I,II,III are the three Wehrmacht Enigma rotors defined in components.py)
     '''
 
-    def __init__(self, key='AAA', swaps=None, rotor_order=['I', 'II', 'III']):
+    def __init__(self, key='AAA', swaps=None, rotor_order=['I', 'II', 'III'], seed=42):
         '''
         Initializes the Enigma machine.
 
@@ -35,6 +37,7 @@ class Enigma():
 
         rotor_order = Defines which rotor to set as the left, middle, and right rotors respectively when considering the Enigma geometrically as described above.
         '''
+    
         if len(key) != 3:
             print('Please provide a three letter string as the initial window setting.')
             return None
@@ -42,9 +45,9 @@ class Enigma():
         self.key = key
         self.rotor_order = rotor_order
         # Now define the components.
-        self.r_rotor = Rotor(rotor_order[2], key[2])
-        self.m_rotor = Rotor(rotor_order[1], key[1], self.r_rotor)
-        self.l_rotor = Rotor(rotor_order[0], key[0], self.m_rotor)
+        self.r_rotor = Rotor(rotor_order[2], key[2], seed=42)
+        self.m_rotor = Rotor(rotor_order[1], key[1], self.r_rotor, seed=42)
+        self.l_rotor = Rotor(rotor_order[0], key[0], self.m_rotor, seed=42)
         self.reflector = Reflector()
         self.plugboard = Plugboard(swaps)
         # Define prev_rotor information for middle and right rotors.

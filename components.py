@@ -11,6 +11,9 @@ Details: This file holds the components of the Engima machine. The machine.py fi
 # Define global variables to hold rotor wiring and stepping information.
 # Wiring information is derived from users.telenet.be/d.rijmenants/en/enigmatech.htm#wiringtables.
 
+import random
+
+
 ROTOR_WIRINGS = {
     'I': {'forward':'EKMFLGDQVZNTOWYHXUSPAIBRCJ',
           'backward':'UWYGADFPVZBECKMTHXSLRINQOJ'},
@@ -37,8 +40,9 @@ class Rotor:
     '''
     This class defines the rotors for the Engima machine.
     '''
-    def __init__(self, rotor_num, window_letter, next_rotor=None, prev_rotor=None):
+    def __init__(self, rotor_num, window_letter, next_rotor=None, prev_rotor=None, seed=42):
         if rotor_num == 'I' or rotor_num == 'II' or rotor_num == 'III' or rotor_num == 'V':
+            random.seed(seed)
             self.rotor_num = rotor_num
             self.wiring = ROTOR_WIRINGS[rotor_num]
             self.notch = ROTOR_NOTCHES[rotor_num]
@@ -65,11 +69,12 @@ class Rotor:
         """
         if self.next_rotor and self.window==self.notch:
             self.next_rotor.step()
-        self.offset = (self.offset + 1)%26
+        self.offset = (self.offset + random.randint(1, 26))%26
         self.window = ALPHABET[self.offset]
        # print(self.offset, self.window)
 
     def encode_letter(self, index, forward=True, return_letter=False, printit=False):
+
         """
         Takes in an index associated with an alphabetic character.
         Uses internal rotor wiring to determine the output letter and its index.
